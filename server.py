@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 from socket import *
 from threading import Thread
 import sys,os
@@ -22,6 +22,9 @@ def pad_msg(msg):
 
 def clientHandler():
     lista_p=[]
+    KoloRatunkowe5050_=True
+    KoloRatunkoweGlosPublicznosci_=True
+    KoloRatunkoweTelefon_=True
     flag_GAMESTART=False
     flag_GAME_GO = False
     flag_1 = False
@@ -32,13 +35,19 @@ def clientHandler():
     flag_3_ok=False
     flag_4 = False
     flag_4_ok=False
+    flag_5 = False
+    flag_5_ok=False
+    flag_6 = False
+    flag_6_ok=False
+    flag_7 = False
+    flag_7_ok=False
+    flag_8 = False
     nick=''
     hajs=0
 
     while True:
         conn, addr = s.accept()
         print(addr, "is connected")
-        logger.info('Połaczenie nowe')
         cmd = conn.recv(MSG_SIZE).strip()
         if cmd.decode("utf8") == "NIE":
             logger.error('Typ nie chce wygrac miliona')
@@ -51,6 +60,7 @@ def clientHandler():
         while True:
             try:
                 data = conn.recv(1024)
+                mess = data.decode("utf8")
             except ConnectionError as r:
                 print("Polaczenie zerwane: ",r.strerror)
                 os._exit(1)
@@ -59,14 +69,247 @@ def clientHandler():
             if data.decode("utf8") == "":
                 sys.exit()
             if data.decode("utf8") == "EXIT":
+                logger.info("Uzytkownik wychodzi z gry")
                 conn.close()
                 s.close()
                 os._exit(1)
                 
             print(f"{addr} : ", repr(data))
             #---------------------------------------------------
+            if flag_8 and mess[0]=="#":
+                msg_kolo = data.decode("utf8")
+                if msg_kolo[0]=="#":
+                    lista_p1 = OsiemPytan()[7]
+                    if msg_kolo=="#1" and KoloRatunkowe5050_:
+                        x = KoloRatunkowe5050(lista_p1)
+                        foo = f"50:50 -> {x[0]} , {x[1]}"
+                        conn.send(foo.encode())
+                        KoloRatunkowe5050_=False
+                    elif msg_kolo=="#2" and KoloRatunkoweGlosPublicznosci_:
+                        x = KoloRatunkoweGlosPublicznosci(lista_p1)
+                        x= x[0]
+                        foo = f"Publicznosc stawia na -> {x}"
+                        conn.send(foo.encode())
+                        KoloRatunkoweGlosPublicznosci_=False
+                    elif msg_kolo=="#3" and KoloRatunkoweTelefon_:
+                        x = KoloRatunkoweTelefon(lista_p1)
+                        x= x[0]
+                        foo = f"Kompel stawia na  -> {x}"
+                        conn.send(foo.encode())
+                        KoloRatunkoweTelefon_=False
+                    else:
+                        foo = "No nie mozesz tutaj wziac kola niestety"
+                        conn.send(foo.encode())
+            elif flag_8:
+                flag_8=False
+                poprawna1 = SprawdzOdp(lista_p,data.decode("utf8"),7)
+                if poprawna1:
+                    hajs=1000000
+                    DodajDoTabeli(nick,hajs)
+                    conn.send(b'$Jestes Millionerem! BRAWO!  1 000 000 zl')
+                    
 
-            if flag_4:
+                else:
+                    conn.send(b"@Bad! No niestety przegrywasz wszystko! sprobuj szczescie pozniej. ")
+            
+            elif flag_7_ok and data.decode("utf8")=="TAK":
+                test_str8='#7'
+                lista_p = OsiemPytan()
+                test_str8+=lista_p[7][1]
+                test_str8+=":"
+                test_str8+=lista_p[7][2]
+                test_str8+=":"
+                test_str8+=lista_p[7][3]
+                test_str8+=":"
+                test_str8+=lista_p[7][4]
+                test_str8+=":"
+                test_str8+=lista_p[7][5]
+                conn.send(test_str8.encode())
+                print(test_str8)
+                flag_7_ok=False
+                flag_8 = True
+            
+            elif flag_7 and mess[0]=="#":
+                msg_kolo = data.decode("utf8")
+                if msg_kolo[0]=="#":
+                    lista_p1 = OsiemPytan()[6]
+                    if msg_kolo=="#1" and KoloRatunkowe5050_:
+                        x = KoloRatunkowe5050(lista_p1)
+                        foo = f"50:50 -> {x[0]} , {x[1]}"
+                        conn.send(foo.encode())
+                        KoloRatunkowe5050_=False
+                    elif msg_kolo=="#2" and KoloRatunkoweGlosPublicznosci_:
+                        x = KoloRatunkoweGlosPublicznosci(lista_p1)
+                        x= x[0]
+                        foo = f"Publicznosc stawia na -> {x}"
+                        conn.send(foo.encode())
+                        KoloRatunkoweGlosPublicznosci_=False
+                    elif msg_kolo=="#3" and KoloRatunkoweTelefon_:
+                        x = KoloRatunkoweTelefon(lista_p1)
+                        x= x[0]
+                        foo = f"Kompel stawia na  -> {x}"
+                        conn.send(foo.encode())
+                        KoloRatunkoweTelefon_=False
+                    else:
+                        foo = "No nie mozesz tutaj wziac kola niestety"
+                        conn.send(foo.encode())
+
+            elif flag_7:
+                flag_7=False
+                poprawna1 = SprawdzOdp(lista_p,data.decode("utf8"),6)
+                if poprawna1:
+                    hajs=500000
+                    flag_7_ok=True
+                    conn.send(b'Good! Masz 500000zl! Jesli chcesz odejsc z pieniedzmi "ODCHODZE" jesli grasz dalej "TAK"')
+                else:
+                    conn.send(b"@Bad! No niestety przegrywasz wszystko! sprobuj szczescie pozniej. ")
+            
+            elif flag_6_ok and data.decode("utf8")=="TAK":
+                test_str7='#6'
+                lista_p = OsiemPytan()
+                test_str7+=lista_p[6][1]
+                test_str7+=":"
+                test_str7+=lista_p[6][2]
+                test_str7+=":"
+                test_str7+=lista_p[6][3]
+                test_str7+=":"
+                test_str7+=lista_p[6][4]
+                test_str7+=":"
+                test_str7+=lista_p[6][5]
+                conn.send(test_str7.encode())
+                print(test_str7)
+                flag_6_ok=False
+                flag_7 = True
+            
+            elif flag_6 and mess[0]=="#":
+                msg_kolo = data.decode("utf8")
+                if msg_kolo[0]=="#":
+                    lista_p1 = OsiemPytan()[5]
+                    if msg_kolo=="#1" and KoloRatunkowe5050_:
+                        x = KoloRatunkowe5050(lista_p1)
+                        foo = f"50:50 -> {x[0]} , {x[1]}"
+                        conn.send(foo.encode())
+                        KoloRatunkowe5050_=False
+                    elif msg_kolo=="#2" and KoloRatunkoweGlosPublicznosci_:
+                        x = KoloRatunkoweGlosPublicznosci(lista_p1)
+                        x= x[0]
+                        foo = f"Publicznosc stawia na -> {x}"
+                        conn.send(foo.encode())
+                        KoloRatunkoweGlosPublicznosci_=False
+                    elif msg_kolo=="#3" and KoloRatunkoweTelefon_:
+                        x = KoloRatunkoweTelefon(lista_p1)
+                        x= x[0]
+                        foo = f"Kompel stawia na  -> {x}"
+                        conn.send(foo.encode())
+                        KoloRatunkoweTelefon_=False
+                    else:
+                        foo = "No nie mozesz tutaj wziac kola niestety"
+                        conn.send(foo.encode())
+
+            elif flag_6:
+                flag_6=False
+                poprawna1 = SprawdzOdp(lista_p,data.decode("utf8"),5)
+                if poprawna1:
+                    hajs=100000
+                    flag_6_ok=True
+                    conn.send(b'Good! Masz 100000zl! Jesli chcesz odejsc z pieniedzmi "ODCHODZE" jesli grasz dalej "TAK"')
+                else:
+                    conn.send(b"@Bad! No niestety przegrywasz wszystko! sprobuj szczescie pozniej. ")
+            
+            elif flag_5_ok and data.decode("utf8")=="TAK":
+                test_str6='#5'
+                lista_p = OsiemPytan()
+                test_str6+=lista_p[5][1]
+                test_str6+=":"
+                test_str6+=lista_p[5][2]
+                test_str6+=":"
+                test_str6+=lista_p[5][3]
+                test_str6+=":"
+                test_str6+=lista_p[5][4]
+                test_str6+=":"
+                test_str6+=lista_p[5][5]
+                conn.send(test_str6.encode())
+                print(test_str6)
+                flag_5_ok=False
+                flag_6 = True
+
+            elif flag_5 and mess[0]=="#":
+                msg_kolo = data.decode("utf8")
+                if msg_kolo[0]=="#":
+                    lista_p1 = OsiemPytan()[4]
+                    if msg_kolo=="#1" and KoloRatunkowe5050_:
+                        x = KoloRatunkowe5050(lista_p1)
+                        foo = f"50:50 -> {x[0]} , {x[1]}"
+                        conn.send(foo.encode())
+                        KoloRatunkowe5050_=False
+                    elif msg_kolo=="#2" and KoloRatunkoweGlosPublicznosci_:
+                        x = KoloRatunkoweGlosPublicznosci(lista_p1)
+                        x= x[0]
+                        foo = f"Publicznosc stawia na -> {x}"
+                        conn.send(foo.encode())
+                        KoloRatunkoweGlosPublicznosci_=False
+                    elif msg_kolo=="#3" and KoloRatunkoweTelefon_:
+                        x = KoloRatunkoweTelefon(lista_p1)
+                        x= x[0]
+                        foo = f"Kompel stawia na  -> {x}"
+                        conn.send(foo.encode())
+                        KoloRatunkoweTelefon_=False
+                    else:
+                        foo = "No nie mozesz tutaj wziac kola niestety"
+                        conn.send(foo.encode())
+            
+            elif flag_5:
+                flag_5=False
+                poprawna1 = SprawdzOdp(lista_p,data.decode("utf8"),4)
+                if poprawna1:
+                    hajs=50000
+                    flag_5_ok=True
+                    conn.send(b'Good! Masz 50000zl! Jesli chcesz odejsc z pieniedzmi "ODCHODZE" jesli grasz dalej "TAK"')
+                else:
+                    conn.send(b"@Bad! No niestety przegrywasz wszystko! sprobuj szczescie pozniej. ")
+            
+            elif flag_4_ok and data.decode("utf8")=="TAK":
+                test_str5='#4'
+                lista_p = OsiemPytan()
+                test_str5+=lista_p[4][1]
+                test_str5+=":"
+                test_str5+=lista_p[4][2]
+                test_str5+=":"
+                test_str5+=lista_p[4][3]
+                test_str5+=":"
+                test_str5+=lista_p[4][4]
+                test_str5+=":"
+                test_str5+=lista_p[4][5]
+                conn.send(test_str5.encode())
+                print(test_str5)
+                flag_4_ok=False
+                flag_5 = True
+
+            elif flag_4 and mess[0]=="#":
+                msg_kolo = data.decode("utf8")
+                if msg_kolo[0]=="#":
+                    lista_p1 = OsiemPytan()[3]
+                    if msg_kolo=="#1" and KoloRatunkowe5050_:
+                        x = KoloRatunkowe5050(lista_p1)
+                        foo = f"50:50 -> {x[0]} , {x[1]}"
+                        conn.send(foo.encode())
+                        KoloRatunkowe5050_=False
+                    elif msg_kolo=="#2" and KoloRatunkoweGlosPublicznosci_:
+                        x = KoloRatunkoweGlosPublicznosci(lista_p1)
+                        x= x[0]
+                        foo = f"Publicznosc stawia na -> {x}"
+                        conn.send(foo.encode())
+                        KoloRatunkoweGlosPublicznosci_=False
+                    elif msg_kolo=="#3" and KoloRatunkoweTelefon_:
+                        x = KoloRatunkoweTelefon(lista_p1)
+                        x= x[0]
+                        foo = f"Kompel stawia na  -> {x}"
+                        conn.send(foo.encode())
+                        KoloRatunkoweTelefon_=False
+                    else:
+                        foo = "No nie mozesz tutaj wziac kola niestety"
+                        conn.send(foo.encode())
+            elif flag_4:
                 flag_4=False
                 poprawna1 = SprawdzOdp(lista_p,data.decode("utf8"),3)
                 if poprawna1:
@@ -92,7 +335,30 @@ def clientHandler():
                 print(test_str4)
                 flag_3_ok=False
                 flag_4 = True
-            #--
+            elif flag_3 and mess[0]=="#":
+                msg_kolo = data.decode("utf8")
+                if msg_kolo[0]=="#":
+                    lista_p1 = OsiemPytan()[2]
+                    if msg_kolo=="#1" and KoloRatunkowe5050_:
+                        x = KoloRatunkowe5050(lista_p1)
+                        foo = f"50:50 -> {x[0]} , {x[1]}"
+                        conn.send(foo.encode())
+                        KoloRatunkowe5050_=False
+                    elif msg_kolo=="#2" and KoloRatunkoweGlosPublicznosci_:
+                        x = KoloRatunkoweGlosPublicznosci(lista_p1)
+                        x= x[0]
+                        foo = f"Publicznosc stawia na -> {x}"
+                        conn.send(foo.encode())
+                        KoloRatunkoweGlosPublicznosci_=False
+                    elif msg_kolo=="#3" and KoloRatunkoweTelefon_:
+                        x = KoloRatunkoweTelefon(lista_p1)
+                        x= x[0]
+                        foo = f"Kompel stawia na  -> {x}"
+                        conn.send(foo.encode())
+                        KoloRatunkoweTelefon_=False
+                    else:
+                        foo = "No nie mozesz tutaj wziac kola niestety"
+                        conn.send(foo.encode())
             elif flag_3:
                 flag_3=False
                 poprawna1 = SprawdzOdp(lista_p,data.decode("utf8"),2)
@@ -117,8 +383,33 @@ def clientHandler():
                 test_str3+=lista_p[2][5]
                 conn.send(test_str3.encode())
                 print(test_str3)
+                flag_2_ok= False
                 flag_3 = True
 
+            elif flag_2 and mess[0]=="#":
+                msg_kolo = data.decode("utf8")
+                if msg_kolo[0]=="#":
+                    lista_p1 = OsiemPytan()[1]
+                    if msg_kolo=="#1" and KoloRatunkowe5050_:
+                        x = KoloRatunkowe5050(lista_p1)
+                        foo = f"50:50 -> {x[0]} , {x[1]}"
+                        conn.send(foo.encode())
+                        KoloRatunkowe5050_=False
+                    elif msg_kolo=="#2" and KoloRatunkoweGlosPublicznosci_:
+                        x = KoloRatunkoweGlosPublicznosci(lista_p1)
+                        x= x[0]
+                        foo = f"Publicznosc stawia na -> {x}"
+                        conn.send(foo.encode())
+                        KoloRatunkoweGlosPublicznosci_=False
+                    elif msg_kolo=="#3" and KoloRatunkoweTelefon_:
+                        x = KoloRatunkoweTelefon(lista_p1)
+                        x= x[0]
+                        foo = f"Kompel stawia na  -> {x}"
+                        conn.send(foo.encode())
+                        KoloRatunkoweTelefon_=False
+                    else:
+                        foo = "No nie mozesz tutaj wziac kola niestety"
+                        conn.send(foo.encode())
             elif flag_2:
                 flag_2=False
                 poprawna1 = SprawdzOdp(lista_p,data.decode("utf8"),1)
@@ -144,10 +435,35 @@ def clientHandler():
                 test_str2+=lista_p[1][5]
                 conn.send(test_str2.encode())
                 print(test_str2)
+                flag_1_ok=False
                 flag_2 = True
-                
+
+            elif flag_1 and mess[0]=="#":
+                msg_kolo = data.decode("utf8")
+                if msg_kolo[0]=="#":
+                    lista_p1 = OsiemPytan()[0]
+                    if msg_kolo=="#1" and KoloRatunkowe5050_:
+                        x = KoloRatunkowe5050(lista_p1)
+                        foo = f"50:50 -> {x[0]} , {x[1]}"
+                        conn.send(foo.encode())
+                        KoloRatunkowe5050_=False
+                    elif msg_kolo=="#2" and KoloRatunkoweGlosPublicznosci_:
+                        x = KoloRatunkoweGlosPublicznosci(lista_p1)
+                        x= x[0]
+                        foo = f"Publicznosc stawia na -> {x}"
+                        conn.send(foo.encode())
+                        KoloRatunkoweGlosPublicznosci_=False
+                    elif msg_kolo=="#3" and KoloRatunkoweTelefon_:
+                        x = KoloRatunkoweTelefon(lista_p1)
+                        x= x[0]
+                        foo = f"Kompel stawia na  -> {x}"
+                        conn.send(foo.encode())
+                        KoloRatunkoweTelefon_=False
+                    else:
+                        foo = "No nie mozesz tutaj wziac kola niestety"
+                        conn.send(foo.encode())
             elif flag_1:
-                flag_1=False
+                flag_1=False    
                 poprawna1 = SprawdzOdp(lista_p,data.decode("utf8"),0)
                 if poprawna1:
                     hajs=100
@@ -170,6 +486,7 @@ def clientHandler():
                 test_str+=lista_p[0][5]
                 conn.send(test_str.encode())
                 print(test_str)
+                flag_GAME_GO=False
                 flag_1 = True
 
             elif data.decode("utf8")=="ODCHODZE":
@@ -196,7 +513,7 @@ def clientHandler():
                 conn.send(b"Graj wedlug protokolu!")
 
 HOST = "127.0.0.1"
-PORT = 12313
+PORT = 12312
 
 s = socket(AF_INET,SOCK_STREAM)
 s.bind((HOST,PORT))

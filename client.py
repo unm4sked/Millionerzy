@@ -39,6 +39,11 @@ if __name__ == "__main__":
           break
       #print("Msg: ",msg) zlapanie pytania  
       if len(msg)>0:
+        if msg[0]=="$":
+          print(msg[1:])
+          Tabela()
+          break
+      if len(msg)>0:
         if msg[0]=="#":
           foo = Pytanie(msg)
           # print(foo)
