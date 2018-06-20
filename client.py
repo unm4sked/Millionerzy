@@ -33,6 +33,7 @@ if __name__ == "__main__":
       sock.send(data.encode())
       data = sock.recv(BUF_SIZE)
       msg = data.decode("utf8")
+      
       if len(msg)>0:
         if msg[0]=="@":
           print(msg[1:])

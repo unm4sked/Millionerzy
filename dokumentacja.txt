@@ -1,0 +1,39 @@
+### Millionerzy - gra ###
+
+-logowanie zdarzeń w grze do pliku game.log
+-baza danych , pytania oraz tabela wyników 
+-wątki 
+
+
+1. Klient rozpoczyna komunkację wysyłająć jakiś tekst który oznacza chęć nawiązania połączenia.
+2. Serwer odbiera wiadomość i wysyła zwrotną z treścią o tym że "START" rozpoczyna gre.
+3. Klient wpisuje  "START"  .
+4. Serwer wysyła wiadomość o podanie nicku w grze, serwer zapamiętuje nick.
+5. Klient podaje nick.
+6. Serwer wysyła wiadomość o potwierdzeniu gotowości na pytanie 1.
+7. Klient dopowiada "TAK" , Tutaj zaczyna się już gra, jeśli klient odpowi "NIE" lub co innego zostanie wysłana wiadomość i użytkownik będzie miał szansę jeszcze raz aby potwierdzić.
+8. Serwer w przypadku "TAK" wysyła pierwsze pytanie i odpowiedzi.
+9. Klient wysyła treść odpowiedzi 
+        *Klient może użyć koła ratunkowego wpisując #1 -50:50, #2 -Glos publicznosci, #3 -Telefon do przyjaciela.
+        *Serwer zwraca wtedy odpowiedz
+        *Klient moze odpowiedziec albo uzyt tez innych kół ratunkowych
+        *W przypadku braku kół albo koło jest już wykorzystane serwer zwraca komunikat
+        *W Przypadku złej odpowiedzi serwer zwraca komunikat i kończy gre , wygrane pieniądze przypadają.
+        *W Przypaku dobrej odpowiedzi serwer zwraca komunikat
+10. Po dobrze udzielonej odpowiedzi serwer wysyła wiadomość w której możemy wziąć pieniądze wygrane i zostać zapisani w tabeli z tym wynikiem.
+        * "ODCHODZE" wychodzimy z gry ale wynik zostaje zapisany.
+        * "TAK" skutkuje tym że serwer wysyła nam kolejne pytanie.
+        * Gdy próbujemy odejść podczas udzielania odpowiedzi na pytanie traktowane to jest jako zła odpowiedz.
+11. Komenda "EXIT" to tzw. "twarde wyjście", powoduje że wychodzimy z gry, wyłączamy serwer.
+12. Po udzieleniu poprawnych odpowiedzi na wszystkie pytania zostaje wyswietlony komunikat, zostajemy wpisani do tabeli wyników i zostaje wyświetlona tabela.
+13. Gdy przed zaczęciem gry klient postępuje niezgodnie z protokolem klient i serwer zostają wyłączeni.
+14. Gdy po zacząciu gry klient postępuje niezgodnie z protokołem klient otrzymuje wiadomość zwrotną od serwera.
+
+Zwrotne wiadomości od serwera do klienta:
+-> Zaczyna się na "@" - wyswietlenie wiadomosci i wyjscie.
+-> Zaczyna się na "$" - akcja gdy ktoś wygra milion.
+-> Zaczyna się na "#" - pytania od serwera.
+
+Cała logika znajduje się po stronie serwera.
+    - przechodzenie do kolejnych etapów poprzez zmienianie kolejnych flag na True z False
+

@@ -7,12 +7,16 @@ import logging,signal,time
 
 
 ##Logger##
-logger = logging.getLogger('myapp')
-hdlr = logging.FileHandler('myapp.log')
-formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
-hdlr.setFormatter(formatter)
-logger.addHandler(hdlr) 
-logger.setLevel(logging.WARNING)
+logging.basicConfig(filename='game.log',
+                    level=logging.DEBUG,
+                    format='%(asctime)s %(name)-4s %(levelname)-4s %(message)s',
+                    datefmt='%d/%m/%Y %H:%M:%S')
+# logger = logging.getLogger('myapp')
+# hdlr = logging.FileHandler('myapp.log')
+# formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+# hdlr.setFormatter(formatter)
+# logger.addHandler(hdlr) 
+# logger.setLevel(logging.WARNING)
 #####
 
 MSG_SIZE=50
@@ -49,13 +53,14 @@ def clientHandler():
         conn, addr = s.accept()
         print(addr, "is connected")
         cmd = conn.recv(MSG_SIZE).strip()
-        if cmd.decode("utf8") == "NIE":
-            logger.error('Typ nie chce wygrac miliona')
-            conn.close()
-            s.close()
-            os._exit(1)
+        # if cmd.decode("utf8") == "NIE":
+        #     logging.error(f'Wpisana komenda "NIE", nie chce wygrac miliona {addr}')
+        #     conn.send(b"@Jak nie to nie")
+        #     conn.close()
+        #     os._exit(1)
         
-        conn.send(pad_msg("Proste kazdy chce wygrac, wiec wpisz START").encode())
+        conn.send(pad_msg("Proste ze kazdy chce wygrac, wiec wpisz START").encode())
+        logging.info(f'Rozpoczyna sie gra {addr}')
 
         while True:
             try:
@@ -63,13 +68,17 @@ def clientHandler():
                 mess = data.decode("utf8")
             except ConnectionError as r:
                 print("Polaczenie zerwane: ",r.strerror)
+                logging.info(f'Polaczenie zerwane:  {addr}')
                 os._exit(1)
             if not data:
                 sys.exit()
             if data.decode("utf8") == "":
+                logging.info(f'Wyslana pusta linia {addr}')
+                conn.send(b'@Bye!')
                 sys.exit()
             if data.decode("utf8") == "EXIT":
-                logger.info("Uzytkownik wychodzi z gry")
+                conn.send(b'@Bye!')
+                logging.info(f'Uzytkownik wychodzi z gry "EXIT" {addr}')
                 conn.close()
                 s.close()
                 os._exit(1)
@@ -107,7 +116,8 @@ def clientHandler():
                     hajs=1000000
                     DodajDoTabeli(nick,hajs)
                     conn.send(b'$Jestes Millionerem! BRAWO!  1 000 000 zl')
-                    
+                    logging.info(f'Uzytkownikowi {nick} wygral 1 000 000 zl  {addr}')
+                    conn.close()
 
                 else:
                     conn.send(b"@Bad! No niestety przegrywasz wszystko! sprobuj szczescie pozniej. ")
@@ -128,6 +138,8 @@ def clientHandler():
                 print(test_str8)
                 flag_7_ok=False
                 flag_8 = True
+                logging.info(f'Uzytkownikowi {nick} zadano 8 pytanie  {addr}')
+
             
             elif flag_7 and mess[0]=="#":
                 msg_kolo = data.decode("utf8")
@@ -180,6 +192,8 @@ def clientHandler():
                 print(test_str7)
                 flag_6_ok=False
                 flag_7 = True
+                logging.info(f'Uzytkownikowi {nick} zadano 7 pytanie  {addr}')
+
             
             elif flag_6 and mess[0]=="#":
                 msg_kolo = data.decode("utf8")
@@ -232,6 +246,7 @@ def clientHandler():
                 print(test_str6)
                 flag_5_ok=False
                 flag_6 = True
+                logging.info(f'Uzytkownikowi {nick} zadano 6 pytanie  {addr}')
 
             elif flag_5 and mess[0]=="#":
                 msg_kolo = data.decode("utf8")
@@ -284,6 +299,8 @@ def clientHandler():
                 print(test_str5)
                 flag_4_ok=False
                 flag_5 = True
+                logging.info(f'Uzytkownikowi {nick} zadano 5 pytanie  {addr}')
+
 
             elif flag_4 and mess[0]=="#":
                 msg_kolo = data.decode("utf8")
@@ -335,6 +352,9 @@ def clientHandler():
                 print(test_str4)
                 flag_3_ok=False
                 flag_4 = True
+                logging.info(f'Uzytkownikowi {nick} zadano 4 pytanie  {addr}')
+
+
             elif flag_3 and mess[0]=="#":
                 msg_kolo = data.decode("utf8")
                 if msg_kolo[0]=="#":
@@ -385,6 +405,8 @@ def clientHandler():
                 print(test_str3)
                 flag_2_ok= False
                 flag_3 = True
+                logging.info(f'Uzytkownikowi {nick} zadano 3 pytanie  {addr}')
+
 
             elif flag_2 and mess[0]=="#":
                 msg_kolo = data.decode("utf8")
@@ -437,6 +459,7 @@ def clientHandler():
                 print(test_str2)
                 flag_1_ok=False
                 flag_2 = True
+                logging.info(f'Uzytkownikowi {nick} zadano 2 pytanie  {addr}')
 
             elif flag_1 and mess[0]=="#":
                 msg_kolo = data.decode("utf8")
@@ -471,7 +494,7 @@ def clientHandler():
                     conn.send(b'Good! Masz 100zl! Jesli chcesz odejsc z pieniedzmi "ODCHODZE" jesli grasz dalej "TAK"')
                 else:
                     conn.send(b"@Bad! No niestety przegrywasz wszystko! sprobuj szczescie pozniej.")
-            
+
             elif(flag_GAME_GO and data.decode("utf8") == "TAK"):
                 test_str='#1'
                 lista_p = OsiemPytan()
@@ -488,11 +511,19 @@ def clientHandler():
                 print(test_str)
                 flag_GAME_GO=False
                 flag_1 = True
+                logging.info(f'Uzytkownikowi {nick} zadano 1 pytanie  {addr}')
 
             elif data.decode("utf8")=="ODCHODZE":
-                 if nick!='' and hajs>0:
+                if hajs>0:
+                    logging.info(f'Uzytkownik {nick} odchodzi z gry "ODCHODZE", wygral {hajs}  {addr} ')
                     DodajDoTabeli(nick,hajs)
-                    end_str= f"Dzieki za grę {nick} wygrales {hajs} zl! Powodzenia"
+                    end_str= f"@Dzieki za grę {nick} wygrales {hajs} zl! Powodzenia"
+                    conn.send(end_str.encode())
+                    
+                else:
+                    logging.info(f'Uzytkownik {nick} odchodzi z gry "ODCHODZE", wygral {hajs}  {addr} ')
+                    # DodajDoTabeli(nick,hajs)
+                    end_str= f"@Dzieki za grę {nick} wygrales {hajs} zl! Powodzenia"
                     conn.send(end_str.encode())
                     conn.close()
                     os._exit(-1)
@@ -504,13 +535,18 @@ def clientHandler():
                 conn.send(st.encode())
                 flag_GAMESTART=False
                 flag_GAME_GO=True
+                logging.info(f'Uzytkownik ma nick {nick} {addr}')
 
             elif data.decode("utf8") == "START":
+                logging.info(f'Uzytkownik chce grac "START" {addr}')
                 flag_GAMESTART=True
                 conn.send(b"OK, Podaj swoj nick")
                 
+                
             else: 
                 conn.send(b"Graj wedlug protokolu!")
+                zxccv= data.decode("utf8")
+                logging.info(f'Uzytkownik wpisuje cos niezgodnego z protokolem "{zxccv}" {addr}')
 
 HOST = "127.0.0.1"
 PORT = 12312
