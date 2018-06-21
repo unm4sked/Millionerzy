@@ -32,6 +32,7 @@
 Wiadomości od klienta do serwera:
 -> dodawana jest dlugosc ciągu na początku
 -> Serwer sprawdza długość , jeśli się nie zgadza w logach zapisany jest error
+-> kodowane są w base64 , serwer pierwsze co robi dekoduje wiadomość
 
 Zwrotne wiadomości od serwera do klienta("zaczyna się" po odcięciu dlugosci wiadomosci przez program):
 -> Zaczyna się na "@" - wyswietlenie wiadomosci i wyjscie klienta.

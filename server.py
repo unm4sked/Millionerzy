@@ -1,4 +1,4 @@
-
+import base64
 from socket import *
 from threading import Thread
 import sys,os
@@ -19,7 +19,7 @@ logging.basicConfig(filename='game.log',
 # logger.setLevel(logging.WARNING)
 #####
 
-MSG_SIZE=50
+MSG_SIZE=80
 
 def pad_msg(msg):
   return msg + ' ' * (MSG_SIZE - len(msg))
@@ -53,6 +53,7 @@ def clientHandler():
         conn, addr = s.accept()
         print(addr, "is connected")
         cmd = conn.recv(MSG_SIZE).strip()
+        cmd = base64.b64decode(cmd)
         if CheckLen(cmd.decode("utf8")):
             print(cmd.decode("utf8"))
             cmd = cmd[2:]
@@ -65,6 +66,7 @@ def clientHandler():
         while True:
             try:
                 data = conn.recv(1024)
+                data = base64.b64decode(data)
                 mess = data.decode("utf8")
                 if CheckLen(data.decode("utf8")):
                     data = data[2:]

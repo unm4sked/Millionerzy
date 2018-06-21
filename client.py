@@ -1,5 +1,6 @@
 import sys
 import socket
+import base64
 from stuff import *
 BUF_SIZE = 4096
 
@@ -31,7 +32,8 @@ if __name__ == "__main__":
       if data=="START":
         ZasadyGry()
       data = AddLength(data)
-      sock.send(data.encode())
+      data_b64 = base64.b64encode(data.encode())
+      sock.send(data_b64)
 
       data = sock.recv(BUF_SIZE)
       msg = data.decode("utf8")
