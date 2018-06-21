@@ -66,7 +66,10 @@ def clientHandler():
         while True:
             try:
                 data = conn.recv(1024)
-                data = base64.b64decode(data)
+                if not data:
+                    sys.exit()
+                if data != "":
+                    data = base64.b64decode(data)
                 mess = data.decode("utf8")
                 if CheckLen(data.decode("utf8")):
                     data = data[2:]
@@ -126,7 +129,7 @@ def clientHandler():
                     DodajDoTabeli(nick,hajs)
                     conn.send(b'$Jestes Millionerem! BRAWO!  1 000 000 zl')
                     logging.info(f'Uzytkownikowi {nick} wygral 1 000 000 zl  {addr}')
-                    conn.close()
+                    
 
                 else:
                     conn.send(b"@Bad! No niestety przegrywasz wszystko! sprobuj szczescie pozniej. ")
