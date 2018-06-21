@@ -138,7 +138,7 @@ def Pytanie(pytanie):
     foo = pytanie_.split(":")
     return foo
 def WyswietlPytanie(pytanie):
-    print(f'''***A więc dobrze, Pytanie  brzmi: {pytanie[0]}***
+    print(f'''*** A więc dobrze, Pytanie  brzmi: {pytanie[0]} ***
     --->  {pytanie[1]}
     --->  {pytanie[2]}
     --->  {pytanie[3]}
