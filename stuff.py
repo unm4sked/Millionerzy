@@ -1,7 +1,6 @@
 import sqlite3
 import random
 import copy
-
     
 def Tabela():
     wyniki= []
@@ -103,7 +102,28 @@ def SklejNapis(nr,str1):
     
     return test_str2
 
+def CheckLen(string):
+    tmp = string[2:]
+    if string[:2].isdigit():
+        l = len(tmp)
+        if l==int(string[:2]):
+            return True
+    return False
 
+def AddLength(string):
+    s = len(string)
+    if s <= 9:
+        s = "0"+str(s)
+        return s+string
+    else:
+        return str(s)+string
+
+def ChechNrkola(x):
+    x = int(x)
+    if x>3:
+        return False
+    else:
+        return True
 def DodajDoTabeli(name,hajs):
     if hajs < 0:
         hajs=0
@@ -118,7 +138,7 @@ def Pytanie(pytanie):
     foo = pytanie_.split(":")
     return foo
 def WyswietlPytanie(pytanie):
-    print(f'''***A więc dobrze, Pytanie  brzmi: ",{pytanie[0]}***
+    print(f'''***A więc dobrze, Pytanie  brzmi: {pytanie[0]}***
     --->  {pytanie[1]}
     --->  {pytanie[2]}
     --->  {pytanie[3]}

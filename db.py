@@ -26,12 +26,3 @@ for row  in c.execute('''SELECT * FROM GRA '''):
 conn.commit()
 
 conn.close()
-
-def Wylosuj_pytanie():
-    pass
-
-def Zapisz_Wynik(x):
-    pass
-
-def Wyswietl10Naj():
-    pass

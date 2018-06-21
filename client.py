@@ -30,7 +30,9 @@ if __name__ == "__main__":
         break
       if data=="START":
         ZasadyGry()
+      data = AddLength(data)
       sock.send(data.encode())
+
       data = sock.recv(BUF_SIZE)
       msg = data.decode("utf8")
       

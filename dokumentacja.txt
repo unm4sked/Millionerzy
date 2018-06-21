@@ -29,11 +29,45 @@
 13. Gdy przed zaczęciem gry klient postępuje niezgodnie z protokolem klient i serwer zostają wyłączeni.
 14. Gdy po zacząciu gry klient postępuje niezgodnie z protokołem klient otrzymuje wiadomość zwrotną od serwera.
 
-Zwrotne wiadomości od serwera do klienta:
--> Zaczyna się na "@" - wyswietlenie wiadomosci i wyjscie.
--> Zaczyna się na "$" - akcja gdy ktoś wygra milion.
--> Zaczyna się na "#" - pytania od serwera.
+Wiadomości od klienta do serwera:
+-> dodawana jest dlugosc ciągu na początku
+-> Serwer sprawdza długość , jeśli się nie zgadza w logach zapisany jest error
+
+Zwrotne wiadomości od serwera do klienta("zaczyna się" po odcięciu dlugosci wiadomosci przez program):
+-> Zaczyna się na "@" - wyswietlenie wiadomosci i wyjscie klienta.
+-> Zaczyna się na "$" - akcja klienta gdy wygra milion.
+-> Zaczyna się na "#" - pytania od serwera (GRA) ).
 
 Cała logika znajduje się po stronie serwera.
     - przechodzenie do kolejnych etapów poprzez zmienianie kolejnych flag na True z False
 
+
+Opis funkcji w programie:
+
+* Tabela() -> drukuje tabele z aktualnymi wynikami graczowi
+
+* ZasadyGry() -> drukuję zasady gry graczowi
+
+* OsiemPytan() -> wyciąga z bazy liste pytan
+
+* KoloRatunkowe5050(pytanie) -> dla danego pytania generuje 2 odpowiedzi z których jedna jest poprawna (lista)
+
+* KoloRatunkoweGlosPublicznosci(pytanie) -> dla danego pytania zwraca jednoelementową liste
+
+* KoloRatunkoweTelefon(pytanie) -> dla danego pytania zwraca jednoelementową liste
+
+* SklejNapis(nr,str1) -> parsuje pytanie i odpowiedzi do postaci "pytanie:odp1:odp2:odp3:odp4"
+
+* CheckLen(string) -> sprawdza czy wiadomosc zostala przeslana cała poprzez sprawdzenie dlugosci napisu
+
+* AddLength(string) -> dodaje na początku każdej wiadomości długość  np   "TEST" -> "04TEST"
+
+* ChechNrkola(x) -> sprawdza czy poprawnie wpisalismy nr kola ratunkowego if nr kola > 3 : False
+
+* DodajDoTabeli(name,hajs) -> Dodaje do bazy danych, tabeli wyników gracza z wynikiem 
+
+* Pytanie(pytanie) -> splituje pytanie po ":" i odcina dlugosc stringa
+
+* WyswietlPytanie(pytanie) -> Wyswietla pytanie na konsoli gracza
+
+* SprawdzOdp(pytanie,odpowiedz,nr) -> sprawdza poprwnosc odpowiedzi udzielonej przez gracza

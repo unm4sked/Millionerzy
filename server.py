@@ -53,11 +53,11 @@ def clientHandler():
         conn, addr = s.accept()
         print(addr, "is connected")
         cmd = conn.recv(MSG_SIZE).strip()
-        # if cmd.decode("utf8") == "NIE":
-        #     logging.error(f'Wpisana komenda "NIE", nie chce wygrac miliona {addr}')
-        #     conn.send(b"@Jak nie to nie")
-        #     conn.close()
-        #     os._exit(1)
+        if CheckLen(cmd.decode("utf8")):
+            print(cmd.decode("utf8"))
+            cmd = cmd[2:]
+        else:
+            print("???")
         
         conn.send(pad_msg("Proste ze kazdy chce wygrac, wiec wpisz START").encode())
         logging.info(f'Rozpoczyna sie gra {addr}')
@@ -66,6 +66,13 @@ def clientHandler():
             try:
                 data = conn.recv(1024)
                 mess = data.decode("utf8")
+                if CheckLen(data.decode("utf8")):
+                    data = data[2:]
+                    mess = data.decode("utf8")
+                else:
+                    logging.error(f'Zerwane polaczenie {addr}')
+                    conn.close()
+
             except ConnectionError as r:
                 print("Polaczenie zerwane: ",r.strerror)
                 logging.info(f'Polaczenie zerwane:  {addr}')
@@ -85,7 +92,7 @@ def clientHandler():
                 
             print(f"{addr} : ", repr(data))
             #---------------------------------------------------
-            if flag_8 and mess[0]=="#":
+            if flag_8 and mess[0]=="#" and ChechNrkola(mess[1]):
                 msg_kolo = data.decode("utf8")
                 if msg_kolo[0]=="#":
                     lista_p1 = OsiemPytan()[7]
@@ -141,7 +148,7 @@ def clientHandler():
                 logging.info(f'Uzytkownikowi {nick} zadano 8 pytanie  {addr}')
 
             
-            elif flag_7 and mess[0]=="#":
+            elif flag_7 and mess[0]=="#" and ChechNrkola(mess[1]):
                 msg_kolo = data.decode("utf8")
                 if msg_kolo[0]=="#":
                     lista_p1 = OsiemPytan()[6]
@@ -195,7 +202,7 @@ def clientHandler():
                 logging.info(f'Uzytkownikowi {nick} zadano 7 pytanie  {addr}')
 
             
-            elif flag_6 and mess[0]=="#":
+            elif flag_6 and mess[0]=="#" and ChechNrkola(mess[1]):
                 msg_kolo = data.decode("utf8")
                 if msg_kolo[0]=="#":
                     lista_p1 = OsiemPytan()[5]
@@ -248,7 +255,7 @@ def clientHandler():
                 flag_6 = True
                 logging.info(f'Uzytkownikowi {nick} zadano 6 pytanie  {addr}')
 
-            elif flag_5 and mess[0]=="#":
+            elif flag_5 and mess[0]=="#" and ChechNrkola(mess[1]):
                 msg_kolo = data.decode("utf8")
                 if msg_kolo[0]=="#":
                     lista_p1 = OsiemPytan()[4]
@@ -302,7 +309,7 @@ def clientHandler():
                 logging.info(f'Uzytkownikowi {nick} zadano 5 pytanie  {addr}')
 
 
-            elif flag_4 and mess[0]=="#":
+            elif flag_4 and mess[0]=="#" and ChechNrkola(mess[1]):
                 msg_kolo = data.decode("utf8")
                 if msg_kolo[0]=="#":
                     lista_p1 = OsiemPytan()[3]
@@ -355,7 +362,7 @@ def clientHandler():
                 logging.info(f'Uzytkownikowi {nick} zadano 4 pytanie  {addr}')
 
 
-            elif flag_3 and mess[0]=="#":
+            elif flag_3 and mess[0]=="#" and ChechNrkola(mess[1]):
                 msg_kolo = data.decode("utf8")
                 if msg_kolo[0]=="#":
                     lista_p1 = OsiemPytan()[2]
@@ -408,7 +415,7 @@ def clientHandler():
                 logging.info(f'Uzytkownikowi {nick} zadano 3 pytanie  {addr}')
 
 
-            elif flag_2 and mess[0]=="#":
+            elif flag_2 and mess[0]=="#" and ChechNrkola(mess[1]):
                 msg_kolo = data.decode("utf8")
                 if msg_kolo[0]=="#":
                     lista_p1 = OsiemPytan()[1]
@@ -461,7 +468,7 @@ def clientHandler():
                 flag_2 = True
                 logging.info(f'Uzytkownikowi {nick} zadano 2 pytanie  {addr}')
 
-            elif flag_1 and mess[0]=="#":
+            elif flag_1 and mess[0]=="#" and ChechNrkola(mess[1]):
                 msg_kolo = data.decode("utf8")
                 if msg_kolo[0]=="#":
                     lista_p1 = OsiemPytan()[0]
